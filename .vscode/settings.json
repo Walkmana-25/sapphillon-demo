@@ -27,4 +27,7 @@
     "ruff.format.args": [
         "--config=pyproject.toml"
     ],
+    "cSpell.words": [
+        "Sapphilon"
+    ],
 }
