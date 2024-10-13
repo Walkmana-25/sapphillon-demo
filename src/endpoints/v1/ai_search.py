@@ -1,11 +1,10 @@
 import logging
 import os
 
-import requests
-from duckduckgo_search import ddg
 from fastapi import APIRouter, HTTPException
 from langchain.agents import AgentType, initialize_agent, load_tools
 from langchain_community.llms.openai import OpenAI
+from langchain_community.tools import DuckDuckGoSearchRun
 from pydantic import BaseModel
 
 router = APIRouter()
@@ -24,6 +23,13 @@ class AISearchResponse(BaseModel):
 async def ai_search(request: AISearchRequest) -> AISearchResponse:
     try:
         llm = OpenAI(base_url=os.environ.get("OPENAI_BASE_URL"), api_key=os.environ.get("OPENAI_API_KEY"))
+
+        tools = [
+            DuckDuckGoSearchRun(),
+        ]
+
+        agent = initialize_agent(tools, llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, verbose=True)
+        result = agent.run(request.query)
 
         return AISearchResponse(result=result)
     except Exception as e:
