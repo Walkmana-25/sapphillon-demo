@@ -2,9 +2,10 @@ import logging
 import os
 
 from fastapi import APIRouter, HTTPException
-from langchain.agents import AgentType, initialize_agent, load_tools
-from langchain_community.llms.openai import OpenAI
+from langchain.agents import AgentExecutor, create_tool_calling_agent
 from langchain_community.tools import DuckDuckGoSearchRun
+from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_openai import ChatOpenAI
 from pydantic import BaseModel
 
 router = APIRouter()
@@ -22,16 +23,30 @@ class AISearchResponse(BaseModel):
 @router.post("/ai_search", response_model=AISearchResponse)
 async def ai_search(request: AISearchRequest) -> AISearchResponse:
     try:
-        llm = OpenAI(base_url=os.environ.get("OPENAI_BASE_URL"), api_key=os.environ.get("OPENAI_API_KEY"))
+        llm = ChatOpenAI(
+            base_url=os.environ.get("OPENAI_BASE_URL"),
+            api_key=os.environ.get("OPENAI_API_KEY"),
+            model="gpt-4o-mini",
+            temperature=0,
+        )
+        search = DuckDuckGoSearchRun()
 
-        tools = [
-            DuckDuckGoSearchRun(),
-        ]
+        tools = [search]
 
-        agent = initialize_agent(tools, llm, agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION, verbose=True)
-        result = agent.run(request.query)
+        prompt = ChatPromptTemplate.from_messages(
+            [
+                ("system", "You are search Agent"),
+                ("user", "{input}"),
+                MessagesPlaceholder(variable_name="agent_scratchpad"),
+            ]
+        )
 
-        return AISearchResponse(result=result)
+        agent = create_tool_calling_agent(llm, tools, prompt)
+        app = AgentExecutor(agent=agent, tools=tools, verbose=True)
+        result = app.invoke({"input": request.query})
+        logger.info(result)
+
+        return AISearchResponse(result=str(result["output"]))
     except Exception as e:
         logger.exception("ERR")
         raise HTTPException(status_code=500, detail="Internal Server Error") from e
