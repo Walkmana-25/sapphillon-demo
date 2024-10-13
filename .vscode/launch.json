@@ -17,7 +17,8 @@
                 "log_config_debug.yaml"
             ],
             "jinja": false,
-            "console": "integratedTerminal"
+            "console": "integratedTerminal",
+            "envFile": "${workspaceFolder}/.env",
         }
     ]
 }

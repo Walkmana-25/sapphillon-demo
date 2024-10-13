@@ -1,1 +1,1 @@
-./src/requirements.txt
+alembic==1.13.3
