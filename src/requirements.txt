@@ -8,4 +8,6 @@ alembic==1.13.3
 mysqlclient==2.2.4
 sqlalchemy==2.0.35
 langchain==0.3.3
+langchain-openai==0.2.2
 langchain_community==0.3.2
+langgraph==0.2.35
