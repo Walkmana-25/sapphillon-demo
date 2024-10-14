@@ -3,7 +3,7 @@ import os
 
 from fastapi import APIRouter, HTTPException
 from langchain.agents import AgentExecutor, create_tool_calling_agent
-from langchain.output_parsers import ResponseScheme, StructuredOutputParser
+from langchain.output_parsers import PydanticOutputParser
 from langchain_community.tools import DuckDuckGoSearchResults
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_openai import ChatOpenAI
@@ -42,23 +42,6 @@ async def ai_web_search(request: AISearchWebRequest) -> AISearchWebResponse:
         AISearchWebResponse: Response with search result
     """
     try:
-        summary = ResponseScheme(name="summary", type="str", description="Summary of the search result")
-        url = ResponseScheme(name="url", type="str", description="URL of the search result")
-        url_summary = ResponseScheme(name="url_summary", type="list", description="List of URL and Summary")
-        urls = ResponseScheme(name="urls", type="list", description="List of url and url_summary")
-        response_schemes = [
-            summary,
-            urls[
-                url_summary[
-                    url,
-                    summary,
-                ]
-            ],
-        ]
-        output_parser = StructuredOutputParser.from_response_schemas(response_schemes)
-        format_instructions = output_parser.get_format_instructions()
-        logger.info("format_instructions: %s", format_instructions)
-
         llm = ChatOpenAI(
             base_url=os.environ.get("OPENAI_BASE_URL"),
             api_key=SecretStr(os.environ["OPENAI_API_KEY"]),
@@ -69,11 +52,13 @@ async def ai_web_search(request: AISearchWebRequest) -> AISearchWebResponse:
 
         tools = [search]
 
-        prompt = ChatPromptTemplate.from_messages(
+        parser = PydanticOutputParser(pydantic_object=AISearchWebResponse)
+
+        prompt = ChatPromptTemplate(
             [
                 (
                     "system",
-                    f"""
+                    """
                     You are a web search agent.
                     Please search the web for the query and provide the summary and URLs.
                     You must return 5 URLs and their summaries.
@@ -86,16 +71,16 @@ async def ai_web_search(request: AISearchWebRequest) -> AISearchWebResponse:
                 ),
                 ("user", "{input}"),
                 MessagesPlaceholder(variable_name="agent_scratchpad"),
-            ]
+            ],
+            partial_variables={"format_instructions": parser.get_format_instructions()},
         )
 
         agent = create_tool_calling_agent(llm, tools, prompt)
         app = AgentExecutor(agent=agent, tools=tools, verbose=True)
-        result = app.invoke({"input": request.query})
+        result = app.invoke({"input": request.query, "format_instructions": parser.get_format_instructions()})
         logger.info(result)
 
-        response_as_dict = output_parser.parse(result["output"])
-        return AISearchWebResponse(**response_as_dict)
+        return parser.invoke(result["output"])
 
     except Exception as e:
         logger.exception("ERR")
