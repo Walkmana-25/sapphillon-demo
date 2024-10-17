@@ -8,7 +8,7 @@ import {
   VStack,
   Button,
   Text,
-  useToast
+  useToast,
 } from "@chakra-ui/react";
 import { TbDog } from "react-icons/tb";
 import { useState } from "react";
@@ -20,33 +20,35 @@ function App() {
 
   const searchBox = () => {
     if (searchIsNull) {
-      return  (
-      <Input
-      w="85%"
-      h="50"
-      borderColor={"gray.300"}
-      bg="gray.100"
-      placeholder="Search With Sapphillon"
-      variant={"outline"}
-      isInvalid
-      errorBorderColor="crimson"
-      onChange={(e) => {
-        setSearchText(e.target.value);
-      }}
-    ></Input>)
-    } else {
-      return  (
+      return (
         <Input
-        w="85%"
-        h="50"
-        borderColor={"gray.300"}
-        bg="gray.100"
-        placeholder="Search With Sapphillon"
-        variant={"outline"}
-        onChange={(e) => {
-          setSearchText(e.target.value);
-        }}
-      ></Input>)
+          w="85%"
+          h="50"
+          borderColor={"gray.300"}
+          bg="gray.100"
+          placeholder="Search With Sapphillon"
+          variant={"outline"}
+          isInvalid
+          errorBorderColor="crimson"
+          onChange={(e) => {
+            setSearchText(e.target.value);
+          }}
+        ></Input>
+      );
+    } else {
+      return (
+        <Input
+          w="85%"
+          h="50"
+          borderColor={"gray.300"}
+          bg="gray.100"
+          placeholder="Search With Sapphillon"
+          variant={"outline"}
+          onChange={(e) => {
+            setSearchText(e.target.value);
+          }}
+        ></Input>
+      );
     }
   };
 
@@ -59,12 +61,12 @@ function App() {
         status: "error",
         duration: 5000,
         isClosable: true,
-      })
-      setSearchIsNull(true)
+      });
+      setSearchIsNull(true);
     } else {
-      setSearchIsNull(false)
+      setSearchIsNull(false);
     }
-  }
+  };
 
   return (
     <>
@@ -90,7 +92,13 @@ function App() {
               </Center>
             </Flex>
             {searchBox()}
-            <Button m="3" colorScheme="blackAlpha" onClick={() => {doSearch()}}>
+            <Button
+              m="3"
+              colorScheme="blackAlpha"
+              onClick={() => {
+                doSearch();
+              }}
+            >
               <Text fontSize={20}>Go!</Text>
             </Button>
           </VStack>
