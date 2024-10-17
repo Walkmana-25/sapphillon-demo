@@ -13,7 +13,7 @@ import {
 import { TbDog } from "react-icons/tb";
 import { useState } from "react";
 
-function App() {
+function Home() {
   const [searchText, setSearchText] = useState("");
   const [searchIsNull, setSearchIsNull] = useState(false);
   const toast = useToast();
@@ -108,4 +108,4 @@ function App() {
   );
 }
 
-export default App;
+export default Home;
