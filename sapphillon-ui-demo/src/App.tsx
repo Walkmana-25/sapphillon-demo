@@ -7,25 +7,65 @@ import {
   Heading,
   VStack,
   Button,
-  Text
+  Text,
+  useToast
 } from "@chakra-ui/react";
 import { TbDog } from "react-icons/tb";
+import { useState } from "react";
 
-const searchBox = () => {
-  return (
-    <Input
+function App() {
+  const [searchText, setSearchText] = useState("");
+  const [searchIsNull, setSearchIsNull] = useState(false);
+  const toast = useToast();
+
+  const searchBox = () => {
+    if (searchIsNull) {
+      return  (
+      <Input
       w="85%"
       h="50"
       borderColor={"gray.300"}
       bg="gray.100"
       placeholder="Search With Sapphillon"
       variant={"outline"}
-    ></Input>
-  )
+      isInvalid
+      errorBorderColor="crimson"
+      onChange={(e) => {
+        setSearchText(e.target.value);
+      }}
+    ></Input>)
+    } else {
+      return  (
+        <Input
+        w="85%"
+        h="50"
+        borderColor={"gray.300"}
+        bg="gray.100"
+        placeholder="Search With Sapphillon"
+        variant={"outline"}
+        onChange={(e) => {
+          setSearchText(e.target.value);
+        }}
+      ></Input>)
+    }
+  };
 
-}
+  const doSearch = () => {
+    if (searchText === "") {
+      toast({
+        title: "Search is empty",
+        position: "top-right",
+        description: "Please enter a search term",
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      })
+      setSearchIsNull(true)
+    } else {
+      setSearchIsNull(false)
+    }
+  }
 
-function App() {
   return (
     <>
       <title>Sapphillon Demo</title>
@@ -50,7 +90,9 @@ function App() {
               </Center>
             </Flex>
             {searchBox()}
-            <Button m="3" colorScheme="blackAlpha"><Text fontSize={20}>Go!</Text></Button>
+            <Button m="3" colorScheme="blackAlpha" onClick={() => {doSearch()}}>
+              <Text fontSize={20}>Go!</Text>
+            </Button>
           </VStack>
         </Center>
       </Box>
