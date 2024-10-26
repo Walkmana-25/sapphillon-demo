@@ -84,6 +84,8 @@ function Home() {
       setSearchIsNull(true);
     } else {
       setSearchIsNull(false);
+      
+      window.location.href = `/search?q=${searchText}`;
     }
   };
 

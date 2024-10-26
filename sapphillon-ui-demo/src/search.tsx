@@ -18,6 +18,7 @@ function SearchView() {
     return (
         <>
             <h1>test</h1>
+            <p>{searchParam}</p>
         </>
     )
     
