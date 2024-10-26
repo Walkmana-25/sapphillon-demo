@@ -11,12 +11,31 @@ import {
   useToast,
 } from "@chakra-ui/react";
 import { TbDog } from "react-icons/tb";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 
 function Home() {
   const [searchText, setSearchText] = useState("");
   const [searchIsNull, setSearchIsNull] = useState(false);
   const toast = useToast();
+  
+  const [Param] = useSearchParams();
+  const errMsg = Param.get("err");
+  
+  useEffect(() => {
+    if (errMsg) {
+      toast({
+        title: "Error",
+        position: "top-right",
+        description: errMsg,
+        status: "error",
+        duration: 5000,
+        isClosable: true,
+      });
+    }
+  }, [errMsg, toast]);
+  
+
 
   const searchBox = () => {
     if (searchIsNull) {
