@@ -139,32 +139,25 @@ function SearchView() {
                     setSearchResult(result);
 
                     // get website info
-                    result.urls.forEach((url) => {
-                        try {
-                            fetch("https://api.allorigins.win/get?url=" + url.url)
-                                .then((res) => res.text())
-                                .then((data) => {
-                                    const root = parse(data);
-                                    const title = root?.querySelector('title');
-                                    const h1 = root?.querySelector('h1');
-                                    console.log(h1?.text);
-
-                                    const info = websiteInfo;
-                                    info[url.url] = title?.text ?? url.url;
-
-                                    setWebsiteInfo(info);
-
-                                })
-
-                        } catch (error) {
-                            console.error('Error fetching website info:', error);
-                            const info = websiteInfo;
-                            info[url.url] = url.url;
-                            setWebsiteInfo(info);
-                        }
+                    const info = websiteInfo;
+                    const fetchPromises = result.urls.map((url) => {
+                        return fetch("https://api.allorigins.win/get?url=" + url.url)
+                            .then((res) => res.text())
+                            .then((data) => {
+                                const root = parse(data);
+                                const title = root?.querySelector('title');
+                                info[url.url] = title?.text ?? url.url;
+                            })
+                            .catch((error) => {
+                                console.error('Error fetching website info:', error);
+                                info[url.url] = url.url;
+                            });
                     });
-
-                    setLoadState(false);
+                    
+                    Promise.all(fetchPromises).then(() => {
+                        setWebsiteInfo(info);
+                        setLoadState(false);
+                    });
 
                 })
                 .catch((error) => {
@@ -204,7 +197,6 @@ function SearchView() {
     } else {
         return (
             <>
-            {console.log(websiteInfo)}
                 {navBar()}
                 <Box padding={10}>
                     <Text as="h2" fontSize="xl" fontWeight="bold">Search Results for "{searchParam}"</Text>
@@ -238,7 +230,6 @@ function SearchView() {
                     </Card>
 
                 </Box>
-                {console.log(websiteInfo)}
             </>
         )
     }
