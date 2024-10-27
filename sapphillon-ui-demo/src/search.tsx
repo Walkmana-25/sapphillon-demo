@@ -105,6 +105,7 @@ function SearchView() {
             window.location.href = '/?err=No search query provided.';
         }
     }, [searchParam]);
+
     
 
     if (loadState) {
