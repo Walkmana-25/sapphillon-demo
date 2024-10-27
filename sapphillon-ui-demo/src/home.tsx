@@ -26,7 +26,7 @@ function Home() {
     if (errMsg) {
       toast({
         title: "Error",
-        position: "top-right",
+        position: "bottom-right",
         description: errMsg,
         status: "error",
         duration: 5000,
@@ -75,7 +75,7 @@ function Home() {
     if (searchText === "") {
       toast({
         title: "Search is empty",
-        position: "top-right",
+        position: "bottom-right",
         description: "Please enter a search term",
         status: "error",
         duration: 5000,
