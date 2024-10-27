@@ -24,6 +24,8 @@ import {
 import { TbDog } from "react-icons/tb";
 import { LuSearch } from 'react-icons/lu';
 
+import { parse } from 'node-html-parser';
+
 interface url {
     url: string;
     summary: string;
@@ -38,7 +40,8 @@ function SearchView() {
     const toast = useToast();
 
     //const [loadState, setLoadState] = useState(true);
-    const [loadState, setLoadState] = useState(false);
+    const [loadState, setLoadState] = useState(true);
+    const [searchStarted, setSearchStarted] = useState(false);
 
     const [searchParams] = useSearchParams();
     const searchParam = searchParams.get('q');
@@ -46,38 +49,9 @@ function SearchView() {
     const apiEndpoint = import.meta.env.VITE_API_ENDPOINT
 
     const [searchText, setSearchText] = useState(searchParam ?? "");
-    //const [searchResult, setSearchResult] = useState<SearchResult | null>(null);
-    
-    const [websiteInfo, setWebsiteInfo] = useState<{ [key: string]: string }>({
-        "https://kubernetes.io/docs/concepts/overview/": "k8s-official-docs",
-        "https://kubernetes.io/docs/home/": "k8s-official-docs-home",
-        "https://www.geeksforgeeks.org/introduction-to-kubernetes-k8s/": "geeksforgeeks-k8s-intro",
-        "https://www.zdnet.com/article/what-is-kubernetes-and-why-is-it-so-important/": "zdnet-k8s-importance"
+    const [searchResult, setSearchResult] = useState<SearchResult | null>(null);
 
-    });
-
-    const sample_text = `{
-  "summary": "Kubernetes is an open-source platform designed for managing containerized applications and services. It automates deployment, scaling, and operations of application containers across clusters of hosts. This summary provides insights into what Kubernetes is, its functionalities, and its significance in modern application development.",
-  "urls": [
-    {
-      "url": "https://kubernetes.io/docs/concepts/overview/",
-      "summary": "An overview of Kubernetes, detailing its capabilities in managing containerized workloads and services."
-    },
-    {
-      "url": "https://kubernetes.io/docs/home/",
-      "summary": "The official Kubernetes documentation, offering guidance on how to use Kubernetes for automating and managing containerized applications."
-    },
-    {
-      "url": "https://www.geeksforgeeks.org/introduction-to-kubernetes-k8s/",
-      "summary": "An introduction to Kubernetes, explaining its workings, benefits, and comparisons with other container orchestration platforms."
-    },
-    {
-      "url": "https://www.zdnet.com/article/what-is-kubernetes-and-why-is-it-so-important/",
-      "summary": "An article discussing the importance of Kubernetes, its features, benefits, challenges, and future trends in the context of cloud-native applications."
-    }
-  ]
-}`;
-    const [searchResult, setSearchResult] = useState<SearchResult | null>(JSON.parse(sample_text));
+    const [websiteInfo, setWebsiteInfo] = useState<{ [key: string]: string }>({});
 
     const navBar = () => {
         return (
@@ -145,29 +119,71 @@ function SearchView() {
 
 
     // APIをたたく
-    // useEffect(() => {
-    //     console.log("API Endpoint: " + apiEndpoint);
-    //     fetch(apiEndpoint, {
-    //         method: 'POST',
-    //         headers: {
-    //             'Content-Type': 'application/json',
-    //             'accept': 'application/json'
-    //         },
-    //         body: JSON.stringify({ query: searchParam } )
-    //     })
-    //         .then(response => {console.log(response); return response.json()})
-    //         .then(data => {
-    //             console.log(data);
-    //             const result: SearchResult = data;
-    //             console.log(result);
-    //             setSearchResult(result);
-    //             setLoadState(false);
-    //         })
-    //         .catch((error) => {
-    //             console.error('Error:', error);
-    //             window.location.href = '/?err=API Error';
-    //         });
-    // }, [apiEndpoint, searchParam]);
+    useEffect(() => {
+        let ignore = false;
+        function fetchSys() {
+            console.log("API Endpoint: " + apiEndpoint);
+            fetch(apiEndpoint, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'accept': 'application/json'
+                },
+                body: JSON.stringify({ query: searchParam })
+            })
+                .then(response => { console.log(response); return response.json() })
+                .then(data => {
+                    console.log(data);
+                    const result: SearchResult = data;
+                    console.log(result);
+                    setSearchResult(result);
+
+                    // get website info
+                    result.urls.forEach((url) => {
+                        try {
+                            fetch("https://api.allorigins.win/get?url=" + url.url)
+                                .then((res) => res.text())
+                                .then((data) => {
+                                    const root = parse(data);
+                                    const title = root?.querySelector('title');
+                                    const h1 = root?.querySelector('h1');
+                                    console.log(h1?.text);
+
+                                    const info = websiteInfo;
+                                    info[url.url] = title?.text ?? url.url;
+
+                                    setWebsiteInfo(info);
+
+                                })
+
+                        } catch (error) {
+                            console.error('Error fetching website info:', error);
+                            const info = websiteInfo;
+                            info[url.url] = url.url;
+                            setWebsiteInfo(info);
+                        }
+                    });
+
+                    setLoadState(false);
+
+                })
+                .catch((error) => {
+                    console.error('Error:', error);
+                    //window.location.href = '/?err=API Error';
+                });
+        };
+
+        if (!ignore && !searchStarted) {
+            ignore = true;
+            setSearchStarted(true);
+            fetchSys();
+        }
+
+        return () => {
+            ignore = true;
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, []);
 
 
 

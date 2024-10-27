@@ -4,9 +4,7 @@ import { ChakraProvider } from '@chakra-ui/react'
 import App from './router'
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
     <ChakraProvider>
       <App />
     </ChakraProvider>
-  </StrictMode>,
 )
