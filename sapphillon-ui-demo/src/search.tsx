@@ -37,7 +37,7 @@ function SearchView() {
     const [searchParams] = useSearchParams();
     const searchParam = searchParams.get('q');
     
-    const apiEndpoint = process.env.API_ENDPOINT
+    const apiEndpoint = import.meta.env.API_ENDPOINT
 
     const [searchText, setSearchText] = useState(searchParam ?? "");
     const [searchResult, setSearchResult] = useState<SearchResult | null>(null);
@@ -106,19 +106,6 @@ function SearchView() {
         }
     }, [searchParam]);
     
-    // API Endpointからデータを取得する
-    useEffect(() => {
-        fetch(apiEndpoint, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'accept': 'application/json'
-            },
-            body: JSON.stringify({ query: searchParam })
-        })
-
-        
-    })
 
     if (loadState) {
         return (
