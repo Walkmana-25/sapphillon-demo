@@ -37,7 +37,7 @@ function SearchView() {
     const [searchParams] = useSearchParams();
     const searchParam = searchParams.get('q');
     
-    const apiEndpoint = import.meta.env.API_ENDPOINT
+    const apiEndpoint = import.meta.env.VITE_API_ENDPOINT
 
     const [searchText, setSearchText] = useState(searchParam ?? "");
     const [searchResult, setSearchResult] = useState<SearchResult | null>(null);
@@ -105,6 +105,32 @@ function SearchView() {
             window.location.href = '/?err=No search query provided.';
         }
     }, [searchParam]);
+    
+
+    // APIをたたく
+    useEffect(() => {
+        console.log("API Endpoint: " + apiEndpoint);
+        fetch(apiEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'accept': 'application/json'
+            },
+            body: JSON.stringify({ query: searchParam } )
+        })
+            .then(response => {console.log(response); return response.json()})
+            .then(data => {
+                console.log(data);
+                const result: SearchResult = data;
+                console.log(result);
+                setSearchResult(result);
+                setLoadState(false);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                window.location.href = '/?err=API Error';
+            });
+    }, [apiEndpoint, searchParam]);
 
     
 
@@ -126,12 +152,10 @@ function SearchView() {
         return (
             <>
                 {navBar()}
-                <Box h="92vh">
+                <Box>
                 <Center h="100%">
-                    <VStack>
-                        <Spinner size="xl" />
-                        <Text>Searching for {searchParam}...</Text>
-                    </VStack>
+                tests
+
                 </Center>
                 </Box>
             </>
