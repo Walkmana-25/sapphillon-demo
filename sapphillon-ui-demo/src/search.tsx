@@ -204,6 +204,7 @@ function SearchView() {
     } else {
         return (
             <>
+            {console.log(websiteInfo)}
                 {navBar()}
                 <Box padding={10}>
                     <Text as="h2" fontSize="xl" fontWeight="bold">Search Results for "{searchParam}"</Text>
@@ -237,6 +238,7 @@ function SearchView() {
                     </Card>
 
                 </Box>
+                {console.log(websiteInfo)}
             </>
         )
     }
