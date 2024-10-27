@@ -1,24 +1,24 @@
 version: '3.8'
 
 services:
-  db:
-    image: mariadb:latest
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-    volumes:
-      - ./data:/var/lib/mysql
-    ports:
-      - 3306:3306
-
-    networks:
-      - solufit
-
-    env_file:
-      - .env
+  # db:
+  #   image: mariadb:latest
+  #   restart: always
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+  #     MYSQL_DATABASE: ${MYSQL_DATABASE}
+  #     MYSQL_USER: ${MYSQL_USER}
+  #     MYSQL_PASSWORD: ${MYSQL_PASSWORD}
+  #   volumes:
+  #     - ./data:/var/lib/mysql
+  #   ports:
+  #     - 3306:3306
+  #
+  #   networks:
+  #     - solufit
+  #
+  #   env_file:
+  #     - .env
 
 
   api:
@@ -28,8 +28,6 @@ services:
     restart: always
     ports:
       - 5000:5000
-    depends_on:
-      - db
     environment:
       DEBUG: "True"
 

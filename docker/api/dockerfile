@@ -10,9 +10,11 @@ WORKDIR /app
 
 # Copy the requirements file into the container
 COPY requirements.txt /tmp/
+COPY src/requirements.txt /tmp/req.txt
 
 # Install the Python dependencies
 RUN pip install --no-cache-dir -r /tmp/requirements.txt
+RUN pip install --no-cache-dir -r /tmp/req.txt
 
 # Delete requirements package in installation
 RUN apt-get remove -y build-essential
