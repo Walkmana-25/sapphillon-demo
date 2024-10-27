@@ -217,7 +217,8 @@ function SearchView() {
                                 return (
                                     <Card size="mg" key={index}>
                                         <CardHeader>
-                                            <Heading as="h4" size="md">{websiteInfo[url.url]}</Heading>
+                                            <Heading as="a" size="md" href={url.url}>{websiteInfo[url.url]}</Heading>
+                                            <br />
                                             <Text as="a" href={url.url} fontSize="xs" textColor={"gray.400"}>{url.url}</Text>
                                         </CardHeader>
                                         <CardBody>
