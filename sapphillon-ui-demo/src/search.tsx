@@ -47,6 +47,14 @@ function SearchView() {
 
     const [searchText, setSearchText] = useState(searchParam ?? "");
     //const [searchResult, setSearchResult] = useState<SearchResult | null>(null);
+    
+    const [websiteInfo, setWebsiteInfo] = useState<{ [key: string]: string }>({
+        "https://kubernetes.io/docs/concepts/overview/": "k8s-official-docs",
+        "https://kubernetes.io/docs/home/": "k8s-official-docs-home",
+        "https://www.geeksforgeeks.org/introduction-to-kubernetes-k8s/": "geeksforgeeks-k8s-intro",
+        "https://www.zdnet.com/article/what-is-kubernetes-and-why-is-it-so-important/": "zdnet-k8s-importance"
+
+    });
 
     const sample_text = `{
   "summary": "Kubernetes is an open-source platform designed for managing containerized applications and services. It automates deployment, scaling, and operations of application containers across clusters of hosts. This summary provides insights into what Kubernetes is, its functionalities, and its significance in modern application development.",
@@ -195,15 +203,18 @@ function SearchView() {
 
                     <Text as="h3" fontSize="lg" fontWeight="bold" mt={10} mb={5}>Recommend WebSites</Text>
                     <Card>
-                        <SimpleGrid columns={1} spacing={5}>
+                        <SimpleGrid columns={1} spacing={5} p={5}>
                             {searchResult?.urls.map((url, index) => {
                                 return (
-                                    <Box key={index} border="1px" borderColor="gray.200" borderRadius="md" p={5} m={2} mr={5} ms={5}>
-                                        <a href={url.url} target="_blank" rel="noreferrer">
-                                            <Text fontSize="lg" fontWeight="bold">{url.url}</Text>
-                                        </a>
-                                        <Text>{url.summary}</Text>
-                                    </Box>
+                                    <Card size="mg" key={index}>
+                                        <CardHeader>
+                                            <Heading as="h4" size="md">{websiteInfo[url.url]}</Heading>
+                                            <Text as="a" href={url.url} fontSize="xs" textColor={"gray.400"}>{url.url}</Text>
+                                        </CardHeader>
+                                        <CardBody>
+                                            <Text>{url.summary}</Text>
+                                        </CardBody>
+                                    </Card>
                                 )
                             })}
                         </SimpleGrid>
