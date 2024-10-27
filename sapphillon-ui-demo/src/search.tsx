@@ -19,6 +19,15 @@ import {
 import { TbDog } from "react-icons/tb";
 import { LuSearch } from 'react-icons/lu';
 
+interface url {
+    url: string;
+    summary: string;
+}
+
+interface SearchResult {
+    summary: string;
+    urls: url[];
+}
 
 function SearchView() {
     const toast = useToast();
@@ -27,8 +36,11 @@ function SearchView() {
 
     const [searchParams] = useSearchParams();
     const searchParam = searchParams.get('q');
+    
+    const apiEndpoint = process.env.API_ENDPOINT
 
     const [searchText, setSearchText] = useState(searchParam ?? "");
+    const [searchResult, setSearchResult] = useState<SearchResult | null>(null);
 
     const navBar = () => {
         return (
@@ -93,6 +105,20 @@ function SearchView() {
             window.location.href = '/?err=No search query provided.';
         }
     }, [searchParam]);
+    
+    // API Endpointからデータを取得する
+    useEffect(() => {
+        fetch(apiEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'accept': 'application/json'
+            },
+            body: JSON.stringify({ query: searchParam })
+        })
+
+        
+    })
 
     if (loadState) {
         return (
