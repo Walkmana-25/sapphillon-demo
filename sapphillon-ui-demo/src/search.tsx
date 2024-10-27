@@ -10,7 +10,11 @@ import {
     InputLeftElement,
     InputRightElement,
     Button,
-    useToast
+    useToast,
+    Spinner,
+    Text,
+    VStack,
+    Center
 } from '@chakra-ui/react';
 import { TbDog } from "react-icons/tb";
 import { LuSearch } from 'react-icons/lu';
@@ -29,7 +33,7 @@ function SearchView() {
     const navBar = () => {
         return (
             <Box bg={"gray.100"} px={"10px"}>
-                <Flex h={20} alignItems={"center"} justifyContent={"space-between"}>
+                <Flex h={"8vh"} alignItems={"center"} justifyContent={"space-between"}>
                     <HStack as="a" href="/" display="flex">
                         <Icon as={TbDog} color="blue.500" boxSize={"8"} />
                         <Box>Sapphillon Search Demo</Box>
@@ -94,13 +98,29 @@ function SearchView() {
         return (
             <>
                 {navBar()}
-                <h1>test</h1>
-                <p>{searchParam}</p>
+                <Box h="92vh">
+                <Center h="100%">
+                    <VStack>
+                        <Spinner size="xl" />
+                        <Text>Searching for {searchParam}...</Text>
+                    </VStack>
+                </Center>
+                </Box>
             </>
         )
     } else {
         return (
-            <h1>test</h1>
+            <>
+                {navBar()}
+                <Box h="92vh">
+                <Center h="100%">
+                    <VStack>
+                        <Spinner size="xl" />
+                        <Text>Searching for {searchParam}...</Text>
+                    </VStack>
+                </Center>
+                </Box>
+            </>
         )
     }
 
