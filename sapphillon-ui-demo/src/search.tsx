@@ -241,9 +241,9 @@ function SearchView() {
                         <SimpleGrid columns={1} spacing={5} p={5}>
                             {searchResult?.urls.map((url, index) => {
                                 return (
-                                    <Card size="mg" key={index} overflow={"hidden"} direction={{ base: "column", sm: "row" }}>
-                                        <Center maxW={{ base: "100%", sm: "200px" }}>
-                                            {websitePic[url.url] && <Image src={websitePic[url.url]} alt={websiteInfo[url.url]} maxW={{ base: "100%", sm: "200px" }} objectFit={"scale-down"} />}
+                                    <Card size="mg" key={index} overflow={"hidden"} direction={{ base: "column", md: "row" }}>
+                                        <Center w={{ base: "100%", md: "250px" }} h="250px">
+                                            {websitePic[url.url] && <Image src={websitePic[url.url]} alt={websiteInfo[url.url]} w="250px" h="250px" objectFit={"scale-down"} p="3" />}
                                         </Center>
                                         <Stack>
                                             <CardHeader>
