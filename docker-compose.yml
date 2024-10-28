@@ -36,6 +36,22 @@ services:
     
     env_file:
       - .env
+  
+  web:
+    build:
+      context: .
+      dockerfile: ./docker/web/dockerfile
+    restart: always
+    ports:
+      - 8080:8080
+    environment:
+      VITE_API_ENDPOINT: "http://api:5000/v1/ai_web_search"
+
+    networks:
+      - solufit
+
+    env_file:
+      - .env
 
 networks:
   solufit:
