@@ -164,6 +164,7 @@ function SearchView() {
 
                                 // if pic does not have domain name, add it
                                 const baseUrl = getBaseUrl(url.url);
+                                // @ts-ignore
                                 const picUrl = meta?.getAttribute('content')?.replaceAll('"', "").replaceAll("\\", "") ?? "";
                                 const fullPicUrl = picUrl.startsWith('http') ? picUrl : `${baseUrl}${picUrl}`
 
