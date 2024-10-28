@@ -43,7 +43,7 @@ services:
       dockerfile: ./docker/front/dockerfile
     restart: always
     ports:
-      - 8080:8080
+      - 8080:5173
     environment:
       VITE_API_ENDPOINT: "http://api:5000/v1/ai_web_search"
 
