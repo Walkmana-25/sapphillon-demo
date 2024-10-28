@@ -19,12 +19,24 @@ import {
     CardHeader,
     CardBody,
     Heading,
-    SimpleGrid
+    SimpleGrid,
+    Image,
+    Stack
 } from '@chakra-ui/react';
 import { TbDog } from "react-icons/tb";
 import { LuSearch } from 'react-icons/lu';
 
 import { parse } from 'node-html-parser';
+
+function getBaseUrl(url: string): string {
+    try {
+        const parsedUrl = new URL(url);
+        return `${parsedUrl.protocol}//${parsedUrl.hostname}`;
+    } catch (error) {
+        console.error('Invalid URL:', error);
+        return '';
+    }
+}
 
 interface url {
     url: string;
@@ -52,6 +64,7 @@ function SearchView() {
     const [searchResult, setSearchResult] = useState<SearchResult | null>(null);
 
     const [websiteInfo, setWebsiteInfo] = useState<{ [key: string]: string }>({});
+    const [websitePic, setWebsitePic] = useState<{ [key: string]: string }>({});
 
     const navBar = () => {
         return (
@@ -140,22 +153,35 @@ function SearchView() {
 
                     // get website info
                     const info = websiteInfo;
+                    const pic = websitePic
                     const fetchPromises = result.urls.map((url) => {
                         return fetch("https://api.allorigins.win/get?url=" + url.url)
                             .then((res) => res.text())
                             .then((data) => {
                                 const root = parse(data);
                                 const title = root?.querySelector('title');
+                                const meta = root?.querySelectorAll('meta').filter((m) => m.getAttribute('property') === '\\"og:image\\"')[0];
+
+                                // if pic does not have domain name, add it
+                                const baseUrl = getBaseUrl(url.url);
+                                const picUrl = meta?.getAttribute('content')?.replaceAll('"', "").replaceAll("\\", "") ?? "";
+                                const fullPicUrl = picUrl.startsWith('http') ? picUrl : `${baseUrl}${picUrl}`
+
+                                console.log(title?.text);
+                                console.log(fullPicUrl);
+
                                 info[url.url] = title?.text ?? url.url;
+                                pic[url.url] = fullPicUrl;
                             })
                             .catch((error) => {
                                 console.error('Error fetching website info:', error);
                                 info[url.url] = url.url;
                             });
                     });
-                    
+
                     Promise.all(fetchPromises).then(() => {
                         setWebsiteInfo(info);
+                        setWebsitePic(pic);
                         setLoadState(false);
                     });
 
@@ -215,15 +241,21 @@ function SearchView() {
                         <SimpleGrid columns={1} spacing={5} p={5}>
                             {searchResult?.urls.map((url, index) => {
                                 return (
-                                    <Card size="mg" key={index}>
-                                        <CardHeader>
-                                            <Heading as="a" size="md" href={url.url}>{websiteInfo[url.url]}</Heading>
-                                            <br />
-                                            <Text as="a" href={url.url} fontSize="xs" textColor={"gray.400"}>{url.url}</Text>
-                                        </CardHeader>
-                                        <CardBody>
-                                            <Text>{url.summary}</Text>
-                                        </CardBody>
+                                    <Card size="mg" key={index} overflow={"hidden"} direction={{ base: "column", sm: "row" }}>
+                                        <Center maxW={{ base: "100%", sm: "200px" }}>
+                                            {websitePic[url.url] && <Image src={websitePic[url.url]} alt={websiteInfo[url.url]} maxW={{ base: "100%", sm: "200px" }} objectFit={"scale-down"} />}
+                                        </Center>
+                                        <Stack>
+                                            <CardHeader>
+                                                <Heading as="a" size="md" href={url.url}>{websiteInfo[url.url]}</Heading>
+                                                <br />
+                                                <Text as="a" href={url.url} fontSize="xs" textColor={"gray.400"}>{url.url}</Text>
+                                            </CardHeader>
+
+                                            <CardBody>
+                                                <Text>{url.summary}</Text>
+                                            </CardBody>
+                                        </Stack>
                                     </Card>
                                 )
                             })}
