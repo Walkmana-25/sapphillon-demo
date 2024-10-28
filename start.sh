@@ -28,18 +28,18 @@ echo
 sleep 10
 
 
-echo ------------------------------------------------
-echo Step2: Update Database Model
-echo
-
-alembic upgrade head
-
-# Check the command exited correctly
-if [ $? -gt 0 ]; then
-    echo Error: Failed to update database model
-    exit 1
-fi
-
+# echo ------------------------------------------------
+# echo Step2: Update Database Model
+# echo
+#
+# alembic upgrade head
+#
+# # Check the command exited correctly
+# if [ $? -gt 0 ]; then
+#     echo Error: Failed to update database model
+#     exit 1
+# fi
+#
 echo
 echo ------------------------------------------------
 echo Step3: Start FastAPI Server
