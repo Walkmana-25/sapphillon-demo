@@ -40,7 +40,7 @@ services:
   web:
     build:
       context: .
-      dockerfile: ./docker/web/dockerfile
+      dockerfile: ./docker/front/dockerfile
     restart: always
     ports:
       - 8080:8080
