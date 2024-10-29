@@ -36,7 +36,23 @@ services:
     
     env_file:
       - .env
+  
+  web:
+    build:
+      context: .
+      dockerfile: ./docker/front/dockerfile
+    restart: always
+    ports:
+      - 8080:5173
+    environment:
+      VITE_API_ENDPOINT: "http://localhost:8080/v1/ai_web_search"
+
+    networks:
+      - solufit
+
+    env_file:
+      - .env
 
 networks:
   solufit:
-    external: true
+

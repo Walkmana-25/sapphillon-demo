@@ -1,0 +1,6 @@
+FROM node:20-alpine
+WORKDIR /app
+COPY ./sapphillon-ui-demo/package.json ./
+RUN npm install
+COPY ./sapphillon-ui-demo/ .
+CMD ["npm", "run", "dev", "--", "--host"]
