@@ -1,5 +1,7 @@
 # Sapphilon Demo
 
+This project was created for the purpose of demonstrating new features of Floorp Browser.
+
 ## How to run
 
 ### Requirements
