@@ -6,7 +6,7 @@ pipreqs==0.5.0
 pytest-cov==5.0.0
 alembic==1.13.3
 mysqlclient==2.2.5
-sqlalchemy==2.0.35
+sqlalchemy==2.0.36
 langchain==0.3.3
 langchain-openai==0.2.2
 langchain_community==0.3.2
